@@ -17,8 +17,8 @@ class WarisanApp extends StatelessWidget {
           title: 'Warisan Aleen AI Agent',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFF14301C), // 甘榜深绿
-              secondary: const Color(0xFFF5EBD2), // 奶油米
+              seedColor: const Color(0xFF14301C), // kampung deep green
+              secondary: const Color(0xFFF5EBD2), // cream rice
             ),
             useMaterial3: true,
           ),

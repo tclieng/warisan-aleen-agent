@@ -1,21 +1,21 @@
-/// Warisan Aleen 后端 API 客户端。
-/// 对应 FastAPI 路由（app/main.py）。
+/// Warisan Aleen backend API client.
+/// Matches FastAPI routes in app/main.py.
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 class ApiClient extends ChangeNotifier {
-  // Android 模拟器访问宿主机用 10.0.2.2；真机用电脑局域网 IP。
+  // Android emulator uses 10.0.2.2 to reach host machine; real device uses PC LAN IP.
   String baseUrl;
   ApiClient({this.baseUrl = 'http://10.0.2.2:8000'});
 
-  /// 重新连接尝试次数
+  /// Number of retry attempts on connection failure
   static const int _maxRetries = 2;
   static const Duration _retryDelay = Duration(milliseconds: 800);
   static const Duration _timeout = Duration(seconds: 8);
 
-  /// 最后一次错误（UI 可读）
+  /// Last error message (exposed for UI display)
   String? lastError;
 
   void setBaseUrl(String url) {
@@ -64,7 +64,7 @@ class ApiClient extends ChangeNotifier {
         label: 'GET $path',
       );
 
-  /// 简单的健康检查
+  /// Simple health check
   Future<bool> ping() async {
     try {
       await _get('/');
