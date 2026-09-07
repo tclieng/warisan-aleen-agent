@@ -48,10 +48,10 @@ class _HomePageState extends State<HomePage> {
           selectedIndex: _idx,
           onDestinationSelected: (i) => setState(() => _idx = i),
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.dashboard), label: '概览'),
-            NavigationDestination(icon: Icon(Icons.auto_awesome), label: '生成'),
-            NavigationDestination(icon: Icon(Icons.schedule), label: '队列'),
-            NavigationDestination(icon: Icon(Icons.settings), label: '设置'),
+            NavigationDestination(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+            NavigationDestination(icon: Icon(Icons.auto_awesome), label: 'Generate'),
+            NavigationDestination(icon: Icon(Icons.schedule), label: 'Queue'),
+            NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
           ],
         ),
       );

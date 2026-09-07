@@ -27,25 +27,52 @@ class _QueueScreenState extends State<QueueScreen> {
               ? Colors.blue
               : Colors.grey;
 
+  String _statusLabel(String s) {
+    switch (s) {
+      case 'published':
+        return 'Published';
+      case 'pending_token':
+        return 'Token Missing';
+      case 'scheduled':
+        return 'Scheduled';
+      case 'draft':
+        return 'Draft';
+      default:
+        return s;
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('帖子队列'),
-          actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: _reload)],
+          title: const Text('Post Queue'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: _reload,
+              tooltip: 'Refresh',
+            ),
+          ],
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             try {
               await context.read<ApiClient>().publishDue();
               _reload();
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('已触发发布到点帖子')));
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Due posts triggered')));
+              }
             } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+              if (mounted) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('Error: $e')));
+              }
             }
           },
-          tooltip: '发布到点帖子',
-          child: const Icon(Icons.send),
+          icon: const Icon(Icons.send),
+          label: const Text('Publish Due'),
+          tooltip: 'Publish all due posts now',
         ),
         body: FutureBuilder<List<dynamic>>(
           future: _future,
@@ -53,10 +80,53 @@ class _QueueScreenState extends State<QueueScreen> {
             if (snap.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
             }
-            if (snap.hasError) return Center(child: Text('$snap.error'));
+            if (snap.hasError) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.cloud_off, size: 64, color: Colors.grey),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Failed to load posts',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$snap.error',
+                      style: const TextStyle(color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton.icon(
+                      onPressed: _reload,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
             final list = snap.data ?? [];
             if (list.isEmpty) {
-              return const Center(child: Text('暂无帖子，去“生成”页创建'));
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No posts yet',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Go to Generate to create your first post',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              );
             }
             return ListView.builder(
               itemCount: list.length,
@@ -67,24 +137,40 @@ class _QueueScreenState extends State<QueueScreen> {
                 return Card(
                   child: ListTile(
                     leading: Icon(Icons.circle, color: _statusColor(status), size: 14),
-                    title: Text('${p['title'] ?? '(无标题)'}  [${p['platform']}]'),
+                    title: Text(
+                      '${p['title'] ?? '(No title)'}  [${p['platform'] ?? 'both'}]',
+                    ),
                     subtitle: Text(
-                        '${p['theme'] ?? ''} · $status\n${bm.length > 60 ? bm.substring(0, 60) : bm}'),
+                      '${_statusLabel(status)}  ·  ${p['theme'] ?? ''}\n'
+                      '${bm.isNotEmpty ? (bm.length > 70 ? '${bm.substring(0, 70)}...' : bm) : '(no caption)'}',
+                    ),
                     isThreeLine: true,
                     trailing: (status == 'draft' || status == 'scheduled')
                         ? IconButton(
                             icon: const Icon(Icons.send),
+                            tooltip: 'Publish now',
                             onPressed: () async {
                               try {
                                 await context.read<ApiClient>().publish(p['id']);
                                 _reload();
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text('Post published!')));
+                                }
                               } catch (e) {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(content: Text('$e')));
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(content: Text('Error: $e')));
+                                }
                               }
                             },
                           )
-                        : null,
+                        : (status == 'pending_token'
+                            ? const Tooltip(
+                                message: 'Token missing — set in Settings',
+                                child: Icon(Icons.warning_amber, color: Colors.orange),
+                              )
+                            : null),
                   ),
                 );
               },
