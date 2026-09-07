@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.sqlite
+*.db
+.env
+.env.local
+
+# Flutter
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.pub-cache/
+**/.pub/
+**/build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.metadata/
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Logs / debug
+*.log
+*.err
+*.out
+hs_err_pid*.log
+catcher.log
+catcher.err
+
+# Temporary / debug artifacts (Claude session)
+*.png
+!docs/**/*.png
+!README*.png
+
+# OAuth / token / secrets — NEVER COMMIT
+*.token
+*.tokens
+oauth_*.bat
+open_oauth*.js
+open_oauth*.ps1
+*_token.txt
+*_accounts.json
+explorer_token.txt
+warisan_page_token.txt
+full_token.txt
+oauth_url.txt
+clip_result.txt
+
+# Backend local data
+data/
+*.sqlite-journal

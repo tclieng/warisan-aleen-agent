@@ -1,0 +1,2 @@
+@echo off
+start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --user-data-dir="C:\Users\MK-User\.qclaw\tools\xbrowser\profiles\chrome" "https://www.facebook.com/v26.0/dialog/oauth?client_id=1059118460322383&redirect_uri=http://localhost:8080/callback&response_type=token&scope=pages_show_list,pages_read_engagement,pages_manage_posts,instagram_basic,instagram_content_publish,instagram_manage_insights,public_profile"
